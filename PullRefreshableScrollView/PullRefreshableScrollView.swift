@@ -349,8 +349,10 @@ public class PullRefreshableScrollView: NSScrollView {
     override public var contentView: NSClipView {
         get {
             var superClipView = super.contentView
-            if !(superClipView is PullRefreshableClipView) {
-                
+
+            if !(superClipView is PullRefreshableClipView) &&
+                validateFrame(frame: superClipView.frame)
+            {
                 // backup the document view
                 let documentView = superClipView.documentView
                 
@@ -365,6 +367,15 @@ public class PullRefreshableScrollView: NSScrollView {
         set {
             super.contentView = newValue
         }
+    }
+    
+    private func validateFrame(frame: CGRect) -> Bool {
+        let isValid = frame.origin.y != CGFloat.nan &&
+            frame.origin.y <= CGFloat.greatestFiniteMagnitude
+        
+        print("superClipView has frame \(frame); valid: \(isValid)")
+    
+        return isValid
     }
     
     private func sendScroll(wheel1: Int32 = 0, wheel2: Int32 = 0) {
